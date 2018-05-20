@@ -1,4 +1,4 @@
-package bhz.netty.test;
+package bhz.netty.helloworld;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -11,11 +11,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class Client {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception{
 		
-		EventLoopGroup workgroup = new NioEventLoopGroup();
+		EventLoopGroup group = new NioEventLoopGroup();
 		Bootstrap b = new Bootstrap();
-		b.group(workgroup)
+		b.group(group)
 		.channel(NioSocketChannel.class)
 		.handler(new ChannelInitializer<SocketChannel>() {
 			@Override
@@ -25,12 +25,21 @@ public class Client {
 		});
 		
 		ChannelFuture cf1 = b.connect("127.0.0.1", 8765).sync();
-		
-		//buf
+		//ChannelFuture cf2 = b.connect("127.0.0.1", 8764).sync();
+		//发送消息
+		Thread.sleep(1000);
 		cf1.channel().writeAndFlush(Unpooled.copiedBuffer("777".getBytes()));
+		cf1.channel().writeAndFlush(Unpooled.copiedBuffer("666".getBytes()));
+		//cf2.channel().writeAndFlush(Unpooled.copiedBuffer("888".getBytes()));
+		Thread.sleep(2000);
+		cf1.channel().writeAndFlush(Unpooled.copiedBuffer("888".getBytes()));
+		//cf2.channel().writeAndFlush(Unpooled.copiedBuffer("666".getBytes()));
 		
 		cf1.channel().closeFuture().sync();
-		workgroup.shutdownGracefully();
+		//cf2.channel().closeFuture().sync();
+		group.shutdownGracefully();
+		
+		
 		
 	}
 }
